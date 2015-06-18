@@ -93,36 +93,49 @@ def deduce_problem_from_cwd():
 
 def create_solution(problem):
     solution_path = os.path.join(CWD, problem)
+
     if os.path.exists(solution_path):
         print "Solution exists."
         return
 
-    # create solution directory
     os.mkdir(solution_path)
 
-    # create source file with template
+    write_main_source(solution_path, problem)
+
+    write_makefile(solution_path, problem)
+
+    os.mkdir(os.path.join(solution_path, "test"))
+
+
+def write_main_source(solution_path, problem):
     source_file = open(os.path.join(solution_path, problem + ".cpp"), "w")
-    source_file.write("#include<fstream>\nusing namespace std;\n\nint main() {\nifstream fin(\"" + problem + ".in\");\nofstream fout(\"" + problem + ".out\");\n\n\nfin.close();\nfout.close();\n}")
+    source_file.write(
+        "#include<fstream>\n" + 
+        "using namespace std;\n" + 
+        "\n" + 
+        "int main() {\n" + 
+        "ifstream fin(\"" + problem + ".in\");\n" +
+        "ofstream fout(\"" + problem + ".out\");\n" + 
+        "\n\nfin.close();\n" + 
+        "fout.close();\n" + 
+        "}\n")
     source_file.close()
 
-    # create makefile
+
+def write_makefile(solution_path, problem):
     make_file = open(os.path.join(solution_path, "Makefile"), "w")
-    # TODO: write template makefile
-    make_file.write("compile: " + problem + ".cpp\n" +
-    "\tg++ -g -Wall -O2 " + problem + ".cpp -lm -o " + problem + "\n" +
-    "\n" +
-    "test: compile\n" +
-    "\t@../infoarena.py test\n" +
-    "\n" +
-    "clean:\n" +
-    "\t@rm -f " + problem + "\n" +
-    "\t@rm -f test/" + problem + "\n" +
-    "\t@rm -f *~ *.o\n")
-
+    make_file.write(
+        "compile: " + problem + ".cpp\n" +
+        "\tg++ -g -Wall -O2 " + problem + ".cpp -lm -o " + problem + "\n" +
+        "\n" +
+        "test: compile\n" +
+        "\t@../infoarena.py test\n" +
+        "\n" +
+        "clean:\n" +
+        "\t@rm -f " + problem + "\n" +
+        "\t@rm -f test/" + problem + "\n" +
+        "\t@rm -f *~ *.o\n")
     make_file.close()
-
-    # create test folder
-    os.mkdir(os.path.join(solution_path, "test"))
 
 
 def print_usage():
