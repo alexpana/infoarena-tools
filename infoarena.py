@@ -69,12 +69,20 @@ def run_tests(problem):
 
             # TODO: provide meaningful diff of the output
 
-        print len(failed_tests), "out of", len(tests), "tests failed."
-        print "Failed tests:", failed_tests
+        if len(failed_tests) > 0:
+            print len(failed_tests), "out of", len(tests), "tests failed."
+            print "Failed tests:", failed_tests
+        elif len(tests) == 0:
+            print "No tests were found"
+        else:
+            print "All tests passed"
 
     finally:
-        os.remove(input_file)
-        os.remove(output_file)
+        if os.path.exists(input_file):
+            os.remove(input_file)
+
+        if os.path.exists(output_file):
+            os.remove(output_file)
 
     return 0
 
@@ -94,12 +102,23 @@ def create_solution(problem):
 
     # create source file with template
     source_file = open(os.path.join(solution_path, problem + ".cpp"), "w")
-    source_file.write("#include<fstream>\nusing namespace std;\n\nint main() {\nifstream fin(\"" + problem + ".in\");\nofstream fout(\"" + problem + ".out\");\n\n\nfin.close()\nfout.close()\n}")
+    source_file.write("#include<fstream>\nusing namespace std;\n\nint main() {\nifstream fin(\"" + problem + ".in\");\nofstream fout(\"" + problem + ".out\");\n\n\nfin.close();\nfout.close();\n}")
     source_file.close()
 
     # create makefile
     make_file = open(os.path.join(solution_path, "Makefile"), "w")
     # TODO: write template makefile
+    make_file.write("compile: " + problem + ".cpp\n" +
+    "\tg++ -g -Wall -O2 " + problem + ".cpp -lm -o " + problem + "\n" +
+    "\n" +
+    "test: compile\n" +
+    "\t@../infoarena.py test\n" +
+    "\n" +
+    "clean:\n" +
+    "\t@rm -f " + problem + "\n" +
+    "\t@rm -f test/" + problem + "\n" +
+    "\t@rm -f *~ *.o\n")
+
     make_file.close()
 
     # create test folder
