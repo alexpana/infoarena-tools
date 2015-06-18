@@ -84,7 +84,26 @@ def deduce_problem_from_cwd():
 
 
 def create_solution(problem):
-    pass
+    solution_path = os.path.join(CWD, problem)
+    if os.path.exists(solution_path):
+        print "Solution exists."
+        return
+
+    # create solution directory
+    os.mkdir(solution_path)
+
+    # create source file with template
+    source_file = open(os.path.join(solution_path, problem + ".cpp"), "w")
+    source_file.write("#include<fstream>\nusing namespace std;\n\nint main() {\nifstream fin(\"" + problem + ".in\");\nofstream fout(\"" + problem + ".out\");\n\n\nfin.close()\nfout.close()\n}")
+    source_file.close()
+
+    # create makefile
+    make_file = open(os.path.join(solution_path, "Makefile"), "w")
+    # TODO: write template makefile
+    make_file.close()
+
+    # create test folder
+    os.mkdir(os.path.join(solution_path, "test"))
 
 
 def print_usage():
