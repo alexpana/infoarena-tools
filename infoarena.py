@@ -66,7 +66,7 @@ def run_tests(problem):
                 diff_output = subprocess.check_output(["diff", "-Z", test[1], output_file], cwd = test_dir)
             except subprocess.CalledProcessError as e:
                 failed_tests.append(os.path.split(test[0])[1][:-3])
-
+                shutil.copy(output_file, test[1] + ".failed")
             # TODO: provide meaningful diff of the output
 
         if len(failed_tests) > 0:
@@ -114,8 +114,8 @@ def write_main_source(solution_path, problem):
         "using namespace std;\n" + 
         "\n" + 
         "int main() {\n" + 
-        "ifstream fin(\"" + problem + ".in\");\n" +
-        "ofstream fout(\"" + problem + ".out\");\n" + 
+        "\tifstream fin(\"" + problem + ".in\");\n" +
+        "\tofstream fout(\"" + problem + ".out\");\n" + 
         "\n\nfin.close();\n" + 
         "fout.close();\n" + 
         "}\n")
@@ -129,12 +129,13 @@ def write_makefile(solution_path, problem):
         "\tg++ -g -Wall -O2 " + problem + ".cpp -lm -o " + problem + "\n" +
         "\n" +
         "test: compile\n" +
-        "\t@../infoarena.py test\n" +
+        "\t@python ../infoarena.py test\n" +
         "\n" +
         "clean:\n" +
         "\t@rm -f " + problem + "\n" +
         "\t@rm -f test/" + problem + "\n" +
-        "\t@rm -f *~ *.o\n")
+        "\t@rm -f *~ *.o\n" +
+        "\t@rm -f test/*.failed")
     make_file.close()
 
 
